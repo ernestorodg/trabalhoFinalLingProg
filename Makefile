@@ -6,10 +6,10 @@ ODIR = obj
 SDIR = src
 LIBS = sqlite3
 
-_DEP = dataBank.h extra.h
+_DEP = dataBank.h extra.h menu.h caixa.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEP))
 
-_OBJ = main.o dataBank.o extra.o
+_OBJ = main.o dataBank.o extra.o menu.o caixa.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 EXEC = exercicio

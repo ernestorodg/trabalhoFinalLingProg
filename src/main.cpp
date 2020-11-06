@@ -7,7 +7,8 @@
 
 #include "dataBank.h"
 #include "extra.h"
-
+#include "menu.h"
+#include "caixa.h"
 
 #define OK   							0
 
@@ -15,8 +16,11 @@
 int main() 
 { 
 	int auxiliar = 0;
-	int escolhaFinal = 0; 	// Guarda o valor a ser usado no menu
-	std::string escolha; 	// Guarda o valor que o usuario colocar
+	int escolhaNumerica = 0; 	// Guarda o valor a ser usado no menu
+	std::string escolhaLiteral; 	// Guarda o valor que o usuario colocar
+	std::string segundaEscolhaLiteral;
+
+	Menu menu;
 
 	// Abre o banco de dados meuBanco.db
 	DataBank meuBanco("meuBanco.db");
@@ -37,46 +41,24 @@ int main()
 
 
 	// meuBanco.closeDataBank();
-	while (escolhaFinal != -1)
+	while (escolhaNumerica != -1)
 	{
 		// ++++++++++++++++++++++++++++++++++
 		// Menu:
 		std::cout << "\n\n\n\n\n\n\n" << std::endl;
 
 
-
-		std::cout << "1: Mostrar todos os produtos." << std::endl;
-		std::cout << "2: Modificar o preço de um produto." << std::endl;
-		std::cout << "3: Adicionar produto ao estoque." << std::endl;
-		std::cout << "2: Modificar o preço de um produto." << std::endl;
-		std::cout << "3: ." << std::endl;
-		std::cout << "Outros: Sair" << std::endl;
-		std::cout << "Escolha alguma das opcoes acima a ser efetuada: ";
-		std::getline(std::cin, escolha);
-
-
-		// Eh feita uma verificao caso o usuario coloque uma string:
-		if (isNumeric(escolha))
-			escolhaFinal = std::stoi(escolha);
-		else 
-			escolhaFinal = -1;
-
-
-		// +++++++++++++++++++++++++++++++++
-		// Acoes que o programa ira executar
-    
-
-		std::cout << "\n\n\n\n\n\n\n" << std::endl;
-
-		switch (escolhaFinal){
+		menu.showMenu();
+		escolhaNumerica = menu.defineNumericInput();
+		switch (escolhaNumerica){
 			case 1:					
 				meuBanco.showDataBank();
 				break;
 
 			case 2:
 				std::cout << "Digite o nome do produto procurado: ";
-				std::getline(std::cin, escolha);
-				auxiliar =  meuBanco.lookForProduct(escolha);
+				escolhaLiteral = menu.defineLiteralInput();
+				auxiliar =  meuBanco.lookForProduct(escolhaLiteral);
 
 				if (auxiliar == 0) // produto nao existe
 				{
@@ -87,10 +69,14 @@ int main()
 				else // produto existe
 				{
 					// atualizar produto
-
-					std::cout << "Indice do produto: " << auxiliar << std::endl;
-					meuBanco.updateDataBank(1, auxiliar, "CADERNO");
-					std::cout << "Indice do produto: " << auxiliar << std::endl;
+					std::cout << "Campos: 1 - Nome; 2 - Quantidade ; 3 - Descrição ; 4 - Preço" << std::endl;
+					std::cout << "Campo que deseja atualizar: ";
+					escolhaNumerica = menu.defineNumericInput();
+					std::cout << std::endl;
+					std::cout << "Novo valor: ";
+					segundaEscolhaLiteral = menu.defineLiteralInput();
+					std::cout << std::endl;
+					meuBanco.updateDataBank(escolhaNumerica, auxiliar, segundaEscolhaLiteral);
 
 				}
 
@@ -99,8 +85,8 @@ int main()
 
 			case 3:
 				// std::cout << "Digite o nome do produto procurado: ";
-				// std::getline(std::cin, escolha);
-				// auxiliar =  meuBanco.lookForProduct(escolha);
+				// std::getline(std::cin, escolhaLiteral);
+				// auxiliar =  meuBanco.lookForProduct(escolhaLiteral);
 
 				// if (auxiliar == 0) // produto nao existe
 				// {
@@ -109,11 +95,11 @@ int main()
 				// 	// criar um novo produto: requer pedir ao usuário os dados do produto
 				// 	std::cout << "Nome - 1 ; Quantidade - 2 ; Descrição - 3 ; Preço - 4" << std::endl;
 				// 	std::cout << "Digite o campo a ser mudado, entre os citados acima: ";
-				// 	std::getline(std::cin, escolha);
+				// 	std::getline(std::cin, escolhaLiteral);
 
 				// 	// Testando a inserção:
-				// 	if (isNumeric(escolha))
-				// 		teste = std::stoi(escolha);
+				// 	if (isNumeric(escolhaLiteral))
+				// 		teste = std::stoi(escolhaLiteral);
 				// 	else 
 				// 	{
 				// 		std::cout << "O valor inserido não é permitido...Retornando ao menú" 
