@@ -178,11 +178,11 @@ int DataBank::updateDataBank(int index, int productID, std::string newValue)
 
 	std::string productIDStr = std::to_string(productID);
 
+	std::string myQuery = "UPDATE PRODUTOS SET " + columns[index] + " = '" + newValue + 
+								  "' WHERE ID = " + productIDStr + ";";
 
-	std::string myQuery = "UPDATE PRODUTOS SET " + columns[index] + " = " + newValue + 
-								  " WHERE ID = " + productIDStr + ";";
+	std::cout << myQuery << std::endl;
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
-
 
 	if (exit != SQLITE_OK) 
 	{ 
@@ -264,7 +264,7 @@ int DataBank::lookForProduct(std::string productName)
 	for (x = 0; x < static_cast<int>(records.size()); x++)
 	{
 		if (records[x][1] == productName)
-			return (x + 1);
+			return (std::stoi(records[x][0])); // Retorna o ID do produto
 	}
 
 	return (0);

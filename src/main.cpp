@@ -87,28 +87,51 @@ int main()
 				else // produto existe
 				{
 					// atualizar produto
-					meuBanco.updateDataBank(4, auxiliar, "20");
+
+					std::cout << "Indice do produto: " << auxiliar << std::endl;
+					meuBanco.updateDataBank(1, auxiliar, "CADERNO");
+					std::cout << "Indice do produto: " << auxiliar << std::endl;
+
 				}
 
 
 				break;
 
 			case 3:
-				std::cout << "Digite o nome do produto procurado: ";
-				std::getline(std::cin, escolha);
-				auxiliar =  meuBanco.lookForProduct(escolha);
+				// std::cout << "Digite o nome do produto procurado: ";
+				// std::getline(std::cin, escolha);
+				// auxiliar =  meuBanco.lookForProduct(escolha);
 
-				if (auxiliar == 0) // produto nao existe
-				{
-					// criar um novo produto: requer pedir ao usuário os dados do produto
+				// if (auxiliar == 0) // produto nao existe
+				// {
+				// 	int teste = 0;
+
+				// 	// criar um novo produto: requer pedir ao usuário os dados do produto
+				// 	std::cout << "Nome - 1 ; Quantidade - 2 ; Descrição - 3 ; Preço - 4" << std::endl;
+				// 	std::cout << "Digite o campo a ser mudado, entre os citados acima: ";
+				// 	std::getline(std::cin, escolha);
+
+				// 	// Testando a inserção:
+				// 	if (isNumeric(escolha))
+				// 		teste = std::stoi(escolha);
+				// 	else 
+				// 	{
+				// 		std::cout << "O valor inserido não é permitido...Retornando ao menú" 
+				// 				  << std::endl;
+					
+				// 		break;
+				// 	}
+
+				// 	meuBanco.updateDataBank(teste, auxiliar, );
 
 
-				}					
-				else // produto existe
-				{
-					// atualizar produto
-					// meuBanco.updateDataBank()
-				}
+
+				// }					
+				// else // produto existe
+				// {
+				// 	// atualizar produto
+				// 	// meuBanco.updateDataBank()
+				// }
 				break;
 
 
