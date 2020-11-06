@@ -4,114 +4,140 @@
 #include <iomanip>
 #include <fstream>
 
+
+#include "dataBank.h"
+
 using namespace std; 
 
 
 
-// A função callback eh executada para cada linha na tabela
-static int callback(void* data, int argc, char** argv, char** azColName) 
-{ 
-	// fprintf(stderr, "%s: ", (const char*)data); 
-	std::cout << "Essa função foi chamada" << std::endl;
+// // A função callback eh executada para cada linha na tabela
+// static int callback(void* data, int argc, char** argv, char** azColName) 
+// { 
+// 	// fprintf(stderr, "%s: ", (const char*)data); 
+// 	std::cout << "Essa função foi chamada" << std::endl;
 
-	for (int indice_auxiliar = 0; indice_auxiliar < argc; indice_auxiliar++) 
-	{ 
-		// azColName eh um vetor de strings que contém o nome do atributo (coluna) do banco de dados
-		// argv eh um vetor de strings que contém o valor desse atributo na linha que está sendo lida
-		// printf("%s = %s\n", azColName[indice_auxiliar], argv[indice_auxiliar] ? argv[indice_auxiliar] : "NULL"); 
+// 	for (int indice_auxiliar = 0; indice_auxiliar < argc; indice_auxiliar++) 
+// 	{ 
+// 		// azColName eh um vetor de strings que contém o nome do atributo (coluna) do banco de dados
 
-		std::cout << std::setw(10) << azColName[indice_auxiliar] 
-					<< std::setw(10) << argv[indice_auxiliar]
-					<< std::endl;
-	} 
+// 		// argv eh um vetor de strings que contém o valor desse atributo na linha que está sendo lida
+// 		// printf("%s = %s\n", azColName[indice_auxiliar], argv[indice_auxiliar] ? argv[indice_auxiliar] : "NULL"); 
 
-	printf("\n"); 
-	return 0; 
-} 
+// 		std::cout << std::setw(10) << azColName[indice_auxiliar] 
+// 					<< std::setw(10) << argv[indice_auxiliar]
+// 					<< std::endl;
+// 	} 
+
+// 	printf("\n"); 
+// 	return 0; 
+// } 
 
 
 
 int main() 
 { 
-	sqlite3* DB; // Crio o objeto banco de dados
-	char* messaggeError; //
-	int exit = sqlite3_open("meuBanco.db", &DB); // abro o banco de dados, se nao existe crio
+	// sqlite3* DB; // Crio o objeto banco de dados
 
-	string line;
-	string myQuery = "";
-	ifstream myfile ("create_table.txt");
-	if (myfile.is_open())
-	{
-		while ( getline (myfile,line) )
-		{
-			myQuery += line;
-		}
-	myfile.close();
-	}
-	else cout << "O arquivo não pôde ser aberto." << endl; 
-	// myQuery += '\n';
+	DataBank meuBanco("meuBanco.db");
+
+	meuBanco.createTable();
 
 
-	exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); // Executa a query no banco de dados 
+	meuBanco.insertOnDataBank();
 
-	if (exit != SQLITE_OK) { 
-		std::cerr << "Erro criando a tabela..." << std::endl; 
-		sqlite3_free(messaggeError); 
-	} 
-	else
-		std::cout << "Tabela criada com sucesso!" << std::endl; 
+	meuBanco.showDataBank();
 
-	string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
-
-	cout << "Estado da tabela antes de inserir: " << endl; 
-
-	sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); // Executo a mensagem de query na tabela 
-
-	myQuery = ("INSERT INTO PRODUTOS VALUES(1, 'BANANA', 30, 'FRUTA', 5);"
-			"INSERT INTO PRODUTOS VALUES(2, 'MANGA', 20, 'FRUTA', 4);"
-			"INSERT INTO PRODUTOS VALUES(3, 'ABACAXI', 24, 'FRUTA', 6);"); 
+	meuBanco.deleteRowFromDataBank();
 
 
-	// Executa a string de insercao
-	exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); 
-
-	if (exit != SQLITE_OK) { 
-		std::cerr << "Erro ao inserir na tabela..." << std::endl; 
-		sqlite3_free(messaggeError); 
-	} 
-	else
-		std::cout << "Gravação feita com sucesso!" << std::endl; 
-
-	cout << "Estado da tabela após inserção" << endl; 
-	// Callback atualmente está printando tudo
-	sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
+	meuBanco.closeDataBank();
 
 
-	// Deleta o ID = 2
-	myQuery = "DELETE FROM PRODUTOS WHERE ID = 2;"; 
-	exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); 
-	if (exit != SQLITE_OK) { 
-		std::cerr << "Error DELETE" << std::endl; 
-		sqlite3_free(messaggeError); 
-	} 
-	else
-		std::cout << "Record deleted Successfully!" << std::endl; 
+	// char* messaggeError; //
+	// int exit = sqlite3_open("meuBanco.db", &DB); // abro o banco de dados, se nao existe crio
 
 
-	cout << "Estado da tabela após deletar o item 2" << endl; 
-	sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
 
-	sqlite3_close(DB); 
+	// string line;
+	// string myQuery = "";
+	// ifstream myfile ("./sqlCmd/create_table.txt");
+	// if (myfile.is_open())
+	// {
+	// 	while ( getline (myfile,line) )
+	// 	{
+	// 		myQuery += line;
+	// 	}
+	// myfile.close();
+	// }
+	// else cout << "O arquivo não pôde ser aberto." << endl; 
+	// // myQuery += '\n';
+
+
+
+	// exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); // Executa a query no banco de dados 
+
+	// if (exit != SQLITE_OK) { 
+	// 	std::cerr << "Erro criando a tabela..." << std::endl; 
+	// 	sqlite3_free(messaggeError); 
+	// } 
+	// else
+	// 	std::cout << "Tabela criada com sucesso!" << std::endl; 
+
+	// string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
+
+	// cout << "Estado da tabela antes de inserir: " << endl; 
+
+	// sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); // Executo a mensagem de query na tabela 
+
+	// myQuery = ("INSERT INTO PRODUTOS VALUES(1, 'BANANA', 30, 'FRUTA', 5);"
+	// 		"INSERT INTO PRODUTOS VALUES(2, 'MANGA', 20, 'FRUTA', 4);"
+	// 		"INSERT INTO PRODUTOS VALUES(3, 'ABACAXI', 24, 'FRUTA', 6);"); 
+
+
+	// // Executa a string de insercao
+	// exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); 
+
+	// if (exit != SQLITE_OK) 
+	// { 
+	// 	std::cerr << "Erro ao inserir na tabela..." << std::endl; 
+	// 	sqlite3_free(messaggeError); 
+	// } 
+	// else
+	// 	std::cout << "Gravação feita com sucesso!" << std::endl; 
+
+	// cout << "Estado da tabela após inserção" << endl; 
+	// // Callback atualmente está printando tudo
+	// sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
+
+
+	// // Deleta o ID = 2
+	// myQuery = "DELETE FROM PRODUTOS WHERE ID = 2;"; 
+	// exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); 
+	// if (exit != SQLITE_OK) { 
+	// 	std::cerr << "Error DELETE" << std::endl; 
+	// 	sqlite3_free(messaggeError); 
+	// } 
+	// else
+	// 	std::cout << "Record deleted Successfully!" << std::endl; 
+
+
+	// cout << "Estado da tabela após deletar o item 2" << endl; 
+	// sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
+
+	// sqlite3_close(DB); 
+
+
 	return (0); 
 } 
 	
 
 // Funcoes do programa
-// Exibir o estoque de produtos: Exibe todos os itens registrados, códigos, preços e quantidades
+
+// 1 Exibir o estoque de produtos: Exibe todos os itens registrados, códigos, preços e quantidades
 // disponíveis. Uma função em SQL é executada e retornará uma estrutura de dados ao programa
 // em C++. O programa em C++ exibe a estrutura de dados.
 
-// 1
 
 // 2. Adicionar produto ao estoque: O usuário define um produto e uma quantidade a ser adicionada
 // ao estoque. Caso o produto não exista no banco de dados, o usuário será convidado a inserir

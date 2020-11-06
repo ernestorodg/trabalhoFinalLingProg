@@ -10,13 +10,26 @@
 class DataBank
 {
 	public:
-		int printDB(void*, int, char**, char**);
+		DataBank(const char *); // Construtor padrão
+
+		static int printRows(void*, int, char**, char**);
+
+		void setDataBank(const char *);
+
+		int createTable();
+		int insertOnDataBank();
+		int showDataBank();
+		int deleteRowFromDataBank();
+
+
+		int closeDataBank();
+
 
 
 	protected:
 
 	private:
-		sqlite3* DB; // Crio o objeto banco de dados
+		sqlite3* dataBank; // Crio o objeto banco de dados
 
 };
 
