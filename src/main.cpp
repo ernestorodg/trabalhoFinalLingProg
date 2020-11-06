@@ -17,17 +17,18 @@ int main()
 	int escolhaFinal = 0; 	// Guarda o valor a ser usado no menu
 	std::string escolha; 	// Guarda o valor que o usuario colocar
 
-
-
 	// Abre o banco de dados meuBanco.db
 	DataBank meuBanco("meuBanco.db");
 
 
+	meuBanco.insertOnDataBank("6", "BORRACHA", "5", "UTEIS", "1");
+	meuBanco.updateDataBank();
 
-	// meuBanco.createTable();
 
+	std::vector <std::string> vetorAuxiliar;
+	// vetorAuxiliar= meuBanco.getRows();
 
-	// meuBanco.insertOnDataBank();
+	meuBanco.getFirstEmptyID();
 
 	meuBanco.showDataBank();
 
@@ -96,17 +97,14 @@ int main()
 
 // Funcoes do programa
 
-// 1 Exibir o estoque de produtos: Exibe todos os itens registrados, códigos, preços e quantidades
-// disponíveis. Uma função em SQL é executada e retornará uma estrutura de dados ao programa
-// em C++. O programa em C++ exibe a estrutura de dados.
-
-
 // 2. Adicionar produto ao estoque: O usuário define um produto e uma quantidade a ser adicionada
 // ao estoque. Caso o produto não exista no banco de dados, o usuário será convidado a inserir
 // um preço e código identificador do produto para que ele possa ser adicionado ao estoque.
 // O banco de dados será modificado através de uma função em SQL, segundo os parâmetros
 // passados pelo usuário. O retorno será na forma de uma mensagem de confirmação de registro
 // ou erro. Após a confirmação, o produto poderá ser visualizado por meio da Opção 1.
+
+
 // 3. Remover quantidade de um determinado produto: O usuário passa um código de produto e
 // uma quantidade a ser retirada do banco de dados, sem afetar o fluxo de caixa. O programa em
 // C++ trata a entrada e chama uma função SQL para modificar o banco de dados. O ambiente
