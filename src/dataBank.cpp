@@ -22,25 +22,24 @@ DataBank::DataBank(const char *nomeBancoDados)
 
 
 
-// A função callback eh executada para cada linha na tabela
-int DataBank::printRows(void* data, int argc, char** argv, char** azColName) 
+int DataBank::showDataBank() 
 { 
-	// fprintf(stderr, "%s: ", (const char*)data); 
 
-	// for (int auxiliar_index = 0; auxiliar_index < argc; auxiliar_index++) 
-	// 	std::cout << std::setw(COLUMNS_LENGTH) << azColName[auxiliar_index] 
-	// 				<< std::endl;
+	updateRecords(); // Atualiza os dados em records
 
+	for (unsigned int x = 0; x < records.size(); x++)
+	{
+		for (unsigned int y = 0; y < records[x].size(); y++)
+		{
+			// for (unsigned int indice_auxiliar_terceiro = 0; indice_auxiliar_terceiro < records[indice_auxiliar_terceiro].size(); indice_auxiliar_terceiro++)
 
-	for (int auxiliar_index = 0; auxiliar_index < argc; auxiliar_index++) 
-	{ 
-		// azColName eh um vetor de strings que contém o nome do atributo (coluna) do banco de dados
-		// argv eh um vetor de strings que contém o valor desse atributo na linha que está sendo lida
-		// printf("%s = %s\n", azColName[auxiliar_index], argv[auxiliar_index] ? argv[auxiliar_index] : "NULL"); 
+			std::cout << std::setw(COLUMNS_LENGTH) 
+						<< records[x][y] 
+						<< std::setw(COLUMNS_LENGTH);
 
-		std::cout << std::setw(COLUMNS_LENGTH) << argv[auxiliar_index];
-	} 
-	std::cout << std::endl;
+		}
+		std::cout << std::endl;
+	}
 
 	return 0; 
 } 
@@ -139,18 +138,6 @@ int DataBank::insertOnDataBank(std::string productID, std::string productName,
 }
 
 
-int DataBank::showDataBank()
-{
-	int exit = 0;
-
-	// Callback atualmente está printando tudo
-	std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
-
-	exit = sqlite3_exec(dataBank, query.c_str(), printRows, NULL, NULL); 
-
-	return exit;
-
-}
 
 
 int DataBank::deleteRowFromDataBank()
@@ -171,30 +158,32 @@ int DataBank::deleteRowFromDataBank()
 		std::cout << "Record deleted Successfully!" << std::endl; 
 
 
-	std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
+	// std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
 
-	std::cout << "Estado da tabela após deletar o item 2" << std::endl; 
-	exit = sqlite3_exec(dataBank, query.c_str(), printRows, NULL, NULL); 
+	// std::cout << "Estado da tabela após deletar o item 2" << std::endl; 
+	// exit = sqlite3_exec(dataBank, query.c_str(), NULL, NULL, NULL); 
 
 	return exit;
 }
 
 
 // Atualiza um produto no Banco de dados
-int DataBank::updateDataBank()
+// Com index eh escolhido o que vai ser modificado
+int DataBank::updateDataBank(int index, int productID, std::string newValue)
 {
 	int exit = 0;
 	char* messaggeError; 
 
-	// ID NOME QUANTIDADE DESCRICAO PRECO
+	std::vector <std::string> columns {"ID", "NOME", "QUANTIDADE", "DESCRICAO", "PRECO"}; 
+
+	std::string productIDStr = std::to_string(productID);
 
 
-	// Modificar o valor de DESCRICAO em ID,
-	// Podem ser vários ao mesmo tempo também:
-	// UPDATE Customers SET DESCRICAO = 'FRUTA', PRECO = 6 WHERE ID = 3;
-	std::string myQuery = "UPDATE PRODUTOS SET PRECO = 5 WHERE ID = 3;";
-
+	std::string myQuery = "UPDATE PRODUTOS SET " + columns[index] + " = " + newValue + 
+								  " WHERE ID = " + productIDStr + ";";
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
+
+
 	if (exit != SQLITE_OK) 
 	{ 
 		std::cerr << "Erro ao tentar atualizar..." << std::endl; 
@@ -203,13 +192,8 @@ int DataBank::updateDataBank()
 	else
 		std::cout << "Linha atualizada com sucesso!" << std::endl; 
 
-
-	// std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
-
-	// std::cout << "Estado da tabela após deletar o item 2" << std::endl; 
-	// exit = sqlite3_exec(dataBank, query.c_str(), printRows, NULL, NULL); 
-
 	return exit;
+
 }
 
 
@@ -217,38 +201,12 @@ int DataBank::updateDataBank()
 
 // Para uma inserção controlada, é necessário saber qual o primeiro ID vazio.
 // getFirstEmptyID() retorna o primeiro ID vazio no banco de dados.
-int DataBank::getFirstEmptyID()
+int DataBank::updateRecords()
 {
+	records.clear();
 	std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
 	int exit = 0;
-
-
-	std::cout << "Estado da tabela após deletar o item 2" << std::endl; 
 	exit = sqlite3_exec(dataBank, query.c_str(), extractDataBank, &records, NULL); 
-
-	for (unsigned int indice_auxiliar_primeiro = 0; indice_auxiliar_primeiro < records.size(); indice_auxiliar_primeiro++)
-	{
-		for (unsigned int indice_auxiliar_segundo = 0; indice_auxiliar_segundo < records[indice_auxiliar_primeiro].size(); indice_auxiliar_segundo++)
-		{
-			// for (unsigned int indice_auxiliar_terceiro = 0; indice_auxiliar_terceiro < records[indice_auxiliar_terceiro].size(); indice_auxiliar_terceiro++)
-	
-			std::cout << records[indice_auxiliar_primeiro][indice_auxiliar_segundo] << std::endl;
-
-		}
-	}
-
-	std::cout << "Experimentando coisinhas... tamanho do records - numero de linhas: " << records.size() << std::endl;
-	for (unsigned int indice_auxiliar_primeiro = 0; indice_auxiliar_primeiro < records.size(); indice_auxiliar_primeiro++)
-	{
-	
-			std::cout << records[0][indice_auxiliar_primeiro] << std::endl;
-
-	}
-
-
-
-	// std::cout << (*meuVetor) << std::endl;
-
 	return exit;
 }
 
@@ -264,93 +222,50 @@ Records DataBank::getRecords()
 // do banco de dados e coloca num vetor de vetores de strings para facilitar o acesso.
 int DataBank::extractDataBank(void *data, int argc, char **argv, char **azColName)
 {
-  Records* records = static_cast<Records*>(data);
-  try {
-    records->emplace_back(argv, argv + argc);
-  }
-  catch (...) {
-  	std::cout << "Erro extraindo dados..." << std::endl;
-    // Aborta para não propagar o erro através de sqlite3
-    return 1;
-  }
-  return 0;
+
+
+	Records* records = static_cast<Records*>(data);
+	
+	try {
+		records->emplace_back(argv, argv + argc);
+	}
+	catch (...) {
+		std::cout << "Erro extraindo dados..." << std::endl;
+	// Aborta para não propagar o erro através de sqlite3
+	return 1;
+	}
+	return 0;
 }
 
+int DataBank::getFirstEmptyID()
+{
+	updateRecords();
+	int x = 0;
+
+	for (x = 0; x < static_cast<int>(records.size()); x++)
+	{
+		if (std::stoi(records[x][0]) != x)
+			return x;
+	}
+
+	return (x);
+};
 
 
+// lookForProduct() retorna a ID do produto procurado (a procura eh feita pelo nome do produto)
+// Caso não exista, retorna zero
+int DataBank::lookForProduct(std::string productName)
+{
+	// ID NOME QUANTIDADE DESCRICAO PRECO
 
-// int sqlite3_exec(
-//   sqlite3*,                                  /* An open database */
-//   const char *sql,                           /* SQL to be evaluated */
-//   int (*callback)(void*,int,char**,char**),  /* Callback function */
-//   void *,                                    /* 1st argument to callback */
-//   char **errmsg                              /* Error msg written here */
-// );
+	updateRecords();
+	int x = 0;
 
+	for (x = 0; x < static_cast<int>(records.size()); x++)
+	{
+		if (records[x][1] == productName)
+			return (x + 1);
+	}
 
-/////////////////////////////////////////////
-
-// #include <vector>
-// #include <string>
-// #include <iostream>
-// #include "sqlite3.h"
-// using namespace std;
-
-// sqlite3* db;
-
-// using Record = std::vector<std::string>; //Record eh um vetor de strings
-// using Records = std::vector<Record>;// Records eh um vetor de Record
-
-// int select_callback(void *data, int num_fields, char **argv, char **azColName)
-// {
-//   Records* records = static_cast<Records*>(data);
-//   try {
-//     records->emplace_back(argv, argv + num_fields);
-//   }
-//   catch (...) {
-//     // abort select on failure, don't let exception propogate thru sqlite3 call-stack
-//     return 1;
-//   }
-//   return 0;
-// }
-
-// Records select_stmt(const char* stmt)
-// {
-//   Records records;  
-//   char *errmsg;
-//   int ret = sqlite3_exec(db, stmt, select_callback, &records, &errmsg);
-//   if (ret != SQLITE_OK) {
-//     std::cerr << "Error in select statement " << stmt << "[" << errmsg << "]\n";
-//   }
-//   else {
-//     std::cerr << records.size() << " records returned.\n";
-//   }
-
-//   return records;
-// }
-
-// void sql_stmt(const char* stmt)
-// {
-//   char *errmsg;
-//   int ret = sqlite3_exec(db, stmt, 0, 0, &errmsg);
-//   if (ret != SQLITE_OK) {
-//     std::cerr << "Error in select statement " << stmt << "[" << errmsg << "]\n";
-//   }
-// }
-
-// int main()
-// {
-//   if (sqlite3_open("test.db", &db) != SQLITE_OK) {
-//     std::cerr << "Could not open database.\n";
-//     return 1;
-//   }
-
-//   Records records = select_stmt("SELECT * FROM test");
-//   sqlite3_close(db);
-
-//   for (auto& record : records) {
-//     // do something with your records
-//   }
-
-//   return 0;
-// }
+	return (0);
+}

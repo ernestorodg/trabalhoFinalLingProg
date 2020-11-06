@@ -14,6 +14,7 @@
 
 int main() 
 { 
+	int auxiliar = 0;
 	int escolhaFinal = 0; 	// Guarda o valor a ser usado no menu
 	std::string escolha; 	// Guarda o valor que o usuario colocar
 
@@ -22,7 +23,7 @@ int main()
 
 
 	meuBanco.insertOnDataBank("6", "BORRACHA", "5", "UTEIS", "1");
-	meuBanco.updateDataBank();
+	// meuBanco.updateDataBank();
 
 
 	std::vector <std::string> vetorAuxiliar;
@@ -45,7 +46,9 @@ int main()
 
 
 		std::cout << "1: Mostrar todos os produtos." << std::endl;
-		std::cout << "2: ." << std::endl;
+		std::cout << "2: Modificar o preço de um produto." << std::endl;
+		std::cout << "3: Adicionar produto ao estoque." << std::endl;
+		std::cout << "2: Modificar o preço de um produto." << std::endl;
 		std::cout << "3: ." << std::endl;
 		std::cout << "Outros: Sair" << std::endl;
 		std::cout << "Escolha alguma das opcoes acima a ser efetuada: ";
@@ -71,12 +74,41 @@ int main()
 				break;
 
 			case 2:
+				std::cout << "Digite o nome do produto procurado: ";
+				std::getline(std::cin, escolha);
+				auxiliar =  meuBanco.lookForProduct(escolha);
+
+				if (auxiliar == 0) // produto nao existe
+				{
+					// criar um novo produto: requer pedir ao usuário os dados do produto
+
+
+				}					
+				else // produto existe
+				{
+					// atualizar produto
+					meuBanco.updateDataBank(4, auxiliar, "20");
+				}
 
 
 				break;
 
 			case 3:
+				std::cout << "Digite o nome do produto procurado: ";
+				std::getline(std::cin, escolha);
+				auxiliar =  meuBanco.lookForProduct(escolha);
 
+				if (auxiliar == 0) // produto nao existe
+				{
+					// criar um novo produto: requer pedir ao usuário os dados do produto
+
+
+				}					
+				else // produto existe
+				{
+					// atualizar produto
+					// meuBanco.updateDataBank()
+				}
 				break;
 
 

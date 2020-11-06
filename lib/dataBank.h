@@ -1,3 +1,12 @@
+/*
+**	Esta classe implementa um banco de dados SQLite com 
+**	capacidade de uma tabela somente.
+**
+**
+**
+*/
+
+
 #include <iostream>
 #include <string>
 #include <sqlite3.h>
@@ -15,24 +24,22 @@ class DataBank
 	public:
 		DataBank(const char *); // Construtor padrão
 
-		static int printRows(void*, int, char**, char**);
 		static int extractDataBank(void*, int, char**, char**); 
 
 		void setDataBank(const char *);
-
+		int printRows();
 		int createTable();
 		int insertOnDataBank(std::string , std::string , std::string , std::string , std::string );
 		int showDataBank();
 		int deleteRowFromDataBank();
 		int closeDataBank();
-		int updateDataBank();
+		int updateDataBank(int, int, std::string);
 		int getFirstEmptyID();
-
+		int updateRecords();
+		
+		int lookForProduct(std::string);
 
 		Records getRecords();
-
-
-
 
 	protected:
 
