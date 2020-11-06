@@ -8,6 +8,9 @@
 #include "dataBank.h"
 
 
+#define COLUMNS_LENGTH				15
+
+
 DataBank::DataBank(const char *nomeBancoDados)
 {
 	// if (nomeBancoDados == "")
@@ -23,7 +26,11 @@ DataBank::DataBank(const char *nomeBancoDados)
 int DataBank::printRows(void* data, int argc, char** argv, char** azColName) 
 { 
 	// fprintf(stderr, "%s: ", (const char*)data); 
-	std::cout << "Essa função foi chamada" << std::endl;
+
+	// for (int indice_auxiliar = 0; indice_auxiliar < argc; indice_auxiliar++) 
+	// 	std::cout << std::setw(COLUMNS_LENGTH) << azColName[indice_auxiliar] 
+	// 				<< std::endl;
+
 
 	for (int indice_auxiliar = 0; indice_auxiliar < argc; indice_auxiliar++) 
 	{ 
@@ -31,12 +38,10 @@ int DataBank::printRows(void* data, int argc, char** argv, char** azColName)
 		// argv eh um vetor de strings que contém o valor desse atributo na linha que está sendo lida
 		// printf("%s = %s\n", azColName[indice_auxiliar], argv[indice_auxiliar] ? argv[indice_auxiliar] : "NULL"); 
 
-		std::cout << std::setw(10) << azColName[indice_auxiliar] 
-					<< std::setw(10) << argv[indice_auxiliar]
-					<< std::endl;
+		std::cout << std::setw(COLUMNS_LENGTH) << argv[indice_auxiliar];
 	} 
+	std::cout << std::endl;
 
-	printf("\n"); 
 	return 0; 
 } 
 

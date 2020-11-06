@@ -6,129 +6,91 @@
 
 
 #include "dataBank.h"
-
-using namespace std; 
-
+#include "extra.h"
 
 
-// // A função callback eh executada para cada linha na tabela
-// static int callback(void* data, int argc, char** argv, char** azColName) 
-// { 
-// 	// fprintf(stderr, "%s: ", (const char*)data); 
-// 	std::cout << "Essa função foi chamada" << std::endl;
-
-// 	for (int indice_auxiliar = 0; indice_auxiliar < argc; indice_auxiliar++) 
-// 	{ 
-// 		// azColName eh um vetor de strings que contém o nome do atributo (coluna) do banco de dados
-
-// 		// argv eh um vetor de strings que contém o valor desse atributo na linha que está sendo lida
-// 		// printf("%s = %s\n", azColName[indice_auxiliar], argv[indice_auxiliar] ? argv[indice_auxiliar] : "NULL"); 
-
-// 		std::cout << std::setw(10) << azColName[indice_auxiliar] 
-// 					<< std::setw(10) << argv[indice_auxiliar]
-// 					<< std::endl;
-// 	} 
-
-// 	printf("\n"); 
-// 	return 0; 
-// } 
-
+#define OK   							0
 
 
 int main() 
 { 
-	// sqlite3* DB; // Crio o objeto banco de dados
+	int escolhaFinal = 0; 	// Guarda o valor a ser usado no menu
+	std::string escolha; 	// Guarda o valor que o usuario colocar
 
+
+
+	// Abre o banco de dados meuBanco.db
 	DataBank meuBanco("meuBanco.db");
 
-	meuBanco.createTable();
 
 
-	meuBanco.insertOnDataBank();
+	// meuBanco.createTable();
+
+
+	// meuBanco.insertOnDataBank();
 
 	meuBanco.showDataBank();
 
-	meuBanco.deleteRowFromDataBank();
+	// meuBanco.deleteRowFromDataBank();
 
 
-	meuBanco.closeDataBank();
-
-
-	// char* messaggeError; //
-	// int exit = sqlite3_open("meuBanco.db", &DB); // abro o banco de dados, se nao existe crio
-
-
-
-	// string line;
-	// string myQuery = "";
-	// ifstream myfile ("./sqlCmd/create_table.txt");
-	// if (myfile.is_open())
-	// {
-	// 	while ( getline (myfile,line) )
-	// 	{
-	// 		myQuery += line;
-	// 	}
-	// myfile.close();
-	// }
-	// else cout << "O arquivo não pôde ser aberto." << endl; 
-	// // myQuery += '\n';
+	// meuBanco.closeDataBank();
+	while (escolhaFinal != -1)
+	{
+		// ++++++++++++++++++++++++++++++++++
+		// Menu:
+		std::cout << "\n\n\n\n\n\n\n" << std::endl;
 
 
 
-	// exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); // Executa a query no banco de dados 
-
-	// if (exit != SQLITE_OK) { 
-	// 	std::cerr << "Erro criando a tabela..." << std::endl; 
-	// 	sqlite3_free(messaggeError); 
-	// } 
-	// else
-	// 	std::cout << "Tabela criada com sucesso!" << std::endl; 
-
-	// string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
-
-	// cout << "Estado da tabela antes de inserir: " << endl; 
-
-	// sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); // Executo a mensagem de query na tabela 
-
-	// myQuery = ("INSERT INTO PRODUTOS VALUES(1, 'BANANA', 30, 'FRUTA', 5);"
-	// 		"INSERT INTO PRODUTOS VALUES(2, 'MANGA', 20, 'FRUTA', 4);"
-	// 		"INSERT INTO PRODUTOS VALUES(3, 'ABACAXI', 24, 'FRUTA', 6);"); 
+		std::cout << "1: Mostrar todos os produtos." << std::endl;
+		std::cout << "2: ." << std::endl;
+		std::cout << "3: ." << std::endl;
+		std::cout << "Outros: Sair" << std::endl;
+		std::cout << "Escolha alguma das opcoes acima a ser efetuada: ";
+		std::getline(std::cin, escolha);
 
 
-	// // Executa a string de insercao
-	// exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); 
-
-	// if (exit != SQLITE_OK) 
-	// { 
-	// 	std::cerr << "Erro ao inserir na tabela..." << std::endl; 
-	// 	sqlite3_free(messaggeError); 
-	// } 
-	// else
-	// 	std::cout << "Gravação feita com sucesso!" << std::endl; 
-
-	// cout << "Estado da tabela após inserção" << endl; 
-	// // Callback atualmente está printando tudo
-	// sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
+		// Eh feita uma verificao caso o usuario coloque uma string:
+		if (isNumeric(escolha))
+			escolhaFinal = std::stoi(escolha);
+		else 
+			escolhaFinal = -1;
 
 
-	// // Deleta o ID = 2
-	// myQuery = "DELETE FROM PRODUTOS WHERE ID = 2;"; 
-	// exit = sqlite3_exec(DB, myQuery.c_str(), NULL, 0, &messaggeError); 
-	// if (exit != SQLITE_OK) { 
-	// 	std::cerr << "Error DELETE" << std::endl; 
-	// 	sqlite3_free(messaggeError); 
-	// } 
-	// else
-	// 	std::cout << "Record deleted Successfully!" << std::endl; 
+		// +++++++++++++++++++++++++++++++++
+		// Acoes que o programa ira executar
+    
+
+		std::cout << "\n\n\n\n\n\n\n" << std::endl;
+
+		switch (escolhaFinal){
+			case 1:					
+				meuBanco.showDataBank();
+				break;
+
+			case 2:
 
 
-	// cout << "Estado da tabela após deletar o item 2" << endl; 
-	// sqlite3_exec(DB, query.c_str(), callback, NULL, NULL); 
+				break;
 
-	// sqlite3_close(DB); 
+			case 3:
+
+				break;
 
 
-	return (0); 
+			default:
+				break;
+		};
+	};
+
+	// +++++++++++++++++++++++++++++
+	// Fim do programa
+
+
+	std::cout << "Saindo do programa..." << std::endl;
+
+	return (OK);
 } 
 	
 
