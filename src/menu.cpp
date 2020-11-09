@@ -1,16 +1,30 @@
 // Implementação da classe Menu
 #include <iostream>
+#include <iomanip>
 
 
 #include "menu.h"
 #include "extra.h"
 
 
+#define ESPACAMENTO						10
+
 Menu::Menu() {}
 
 
+void Menu::showCashierMenu() 
+{
+		std::cout << "EXIT Para sair do programa."
+				  << "		DATABASE Para acessar o banco de dados."
+				  << "		CANCEL Para cancelar o último produto." 
+				  << std::endl;
+		std::cout << "Digite o nome do produto para a compra" << std::endl;
 
-void Menu::showMenu() 
+};
+
+
+
+void Menu::showDataBankMenu() 
 {
 		std::cout << "1: Mostrar todos os produtos." << std::endl;
 		std::cout << "2: Modificar um produto." << std::endl;
@@ -43,6 +57,12 @@ std::string Menu::defineLiteralInput()
 	// Eh feita uma verificao caso o usuario coloque uma string ou não!
 	return (entrada);
 }
+
+
+void Menu::teste()
+{
+	std::cout << "Isto eh um teste" << std::endl;
+};
 
 
 

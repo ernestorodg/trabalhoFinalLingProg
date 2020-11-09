@@ -9,125 +9,88 @@
 #include "extra.h"
 #include "menu.h"
 #include "caixa.h"
+#include "interface.h"
 
 #define OK   							0
 
 
 int main() 
 { 
-	int auxiliar = 0;
 	int escolhaNumerica = 0; 	// Guarda o valor a ser usado no menu
-	std::string escolhaLiteral; 	// Guarda o valor que o usuario colocar
-	std::string segundaEscolhaLiteral;
+	std::string inputCashier; 	// Guarda o valor que o usuario colocar
+	std::string inputDataBank;
+	int numericInputDataBank = 0;
 
 	Menu menu;
+	Caixa caixa(10000);
 
 	// Abre o banco de dados meuBanco.db
 	DataBank meuBanco("meuBanco.db");
 
-
-	meuBanco.insertOnDataBank("6", "BORRACHA", "5", "UTEIS", "1");
 	// meuBanco.updateDataBank();
-
-
-	std::vector <std::string> vetorAuxiliar;
-	// vetorAuxiliar= meuBanco.getRows();
-
-	meuBanco.getFirstEmptyID();
-
-	meuBanco.showDataBank();
-
 	// meuBanco.deleteRowFromDataBank();
 
+ //    Interface::cleanScreen();
+ //    Interface::saveScreen();	
+ //    Interface::cleanScreen();
+ //   	Interface::setCursorToBegin();
+	// std::cout << "Testando ANSI: ";
+	// inputCashier = menu.defineLiteralInput();
+ // 	std::cout << std::endl;
+ //    Interface::restoreScreen();
 
-	// meuBanco.closeDataBank();
-	while (escolhaNumerica != -1)
+	// Limpa a tela
+
+    Interface::cleanScreen();
+   	Interface::setCursorToBegin();
+    menu.showCashierMenu();
+
+	while (inputCashier != "EXIT")
 	{
-		// ++++++++++++++++++++++++++++++++++
-		// Menu:
-		std::cout << "\n\n\n\n\n\n\n" << std::endl;
+		// Vou tentar colocar isso aqui em outro lugar usando ansi
+	    std::cout << "\n\t\t\t\t\tSaldo atual: " << caixa.getSaldo() << std::endl;
 
+		inputCashier = menu.defineLiteralInput();
 
-		menu.showMenu();
-		escolhaNumerica = menu.defineNumericInput();
-		switch (escolhaNumerica){
-			case 1:					
-				meuBanco.showDataBank();
-				break;
+		if (inputCashier  == "CANCEL")
+		{
+			// cancela o ultimo produto
+			caixa.cancelLastProduct();
+			std::cout << "CANCEL" << std::endl;
+		}
+		else if (inputCashier == "EXIT")
+		{
+			std::cout << "EXIT" << std::endl;
 
-			case 2:
-				std::cout << "Digite o nome do produto procurado: ";
-				escolhaLiteral = menu.defineLiteralInput();
-				auxiliar =  meuBanco.lookForProduct(escolhaLiteral);
+			// Sai do programa
+		}
+		else if (inputCashier == "DATABASE")
+		{
+			Interface::saveCursorPosition();
+		    Interface::saveScreen();	
+		    Interface::cleanScreen();
+		   	Interface::setCursorToBegin();
 
-				if (auxiliar == 0) // produto nao existe
-				{
-					// criar um novo produto: requer pedir ao usuário os dados do produto
+		   	menu.showDataBankMenu();
 
+			numericInputDataBank = menu.defineNumericInput();
+		 	std::cout << std::endl;
 
-				}					
-				else // produto existe
-				{
-					// atualizar produto
-					std::cout << "Campos: 1 - Nome; 2 - Quantidade ; 3 - Descrição ; 4 - Preço" << std::endl;
-					std::cout << "Campo que deseja atualizar: ";
-					escolhaNumerica = menu.defineNumericInput();
-					std::cout << std::endl;
-					std::cout << "Novo valor: ";
-					segundaEscolhaLiteral = menu.defineLiteralInput();
-					std::cout << std::endl;
-					meuBanco.updateDataBank(escolhaNumerica, auxiliar, segundaEscolhaLiteral);
+		 	caixa.executeDataBaseCommand(numericInputDataBank);
 
-				}
+		    Interface::restoreScreen();
+			Interface::restoreCursorPosition();
 
-
-				break;
-
-			case 3:
-				// std::cout << "Digite o nome do produto procurado: ";
-				// std::getline(std::cin, escolhaLiteral);
-				// auxiliar =  meuBanco.lookForProduct(escolhaLiteral);
-
-				// if (auxiliar == 0) // produto nao existe
-				// {
-				// 	int teste = 0;
-
-				// 	// criar um novo produto: requer pedir ao usuário os dados do produto
-				// 	std::cout << "Nome - 1 ; Quantidade - 2 ; Descrição - 3 ; Preço - 4" << std::endl;
-				// 	std::cout << "Digite o campo a ser mudado, entre os citados acima: ";
-				// 	std::getline(std::cin, escolhaLiteral);
-
-				// 	// Testando a inserção:
-				// 	if (isNumeric(escolhaLiteral))
-				// 		teste = std::stoi(escolhaLiteral);
-				// 	else 
-				// 	{
-				// 		std::cout << "O valor inserido não é permitido...Retornando ao menú" 
-				// 				  << std::endl;
-					
-				// 		break;
-				// 	}
-
-				// 	meuBanco.updateDataBank(teste, auxiliar, );
+		}
+		else // Enquanto nenhuma das opções acima for escolhida o programa pede o produto
+			caixa.getProduct(inputCashier);		
+	}
 
 
 
-				// }					
-				// else // produto existe
-				// {
-				// 	// atualizar produto
-				// 	// meuBanco.updateDataBank()
-				// }
-				break;
 
+	// // meuBanco.closeDataBank();
 
-			default:
-				break;
-		};
-	};
-
-	// +++++++++++++++++++++++++++++
-	// Fim do programa
 
 
 	std::cout << "Saindo do programa..." << std::endl;
@@ -151,10 +114,12 @@ int main()
 // C++ trata a entrada e chama uma função SQL para modificar o banco de dados. O ambiente
 // SQL retorna uma confirmação ou um erro que será repassada ao usuário através da interface
 // em C++.
+
 // 4. Deletar registro de produto do estoque: o usuário entra com um código de produto que será
 // repassado a uma função em SQL que removerá o produto selecionado do banco de dados. O
 // usuário será informado do sucesso ou falha da operação e, quando necessário, receberá um
 // aviso de erro.
+
 // 5. Realizar venda: o programa recebe do usuário um identificador e uma quantidade para cada
 // produto da venda. Caso todos os identificadores e quantidades correspondam com o que existe
 // no estoque, as quantidades serão debitadas do banco de dados e o valor da transação será

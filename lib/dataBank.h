@@ -36,8 +36,14 @@ class DataBank
 		int updateDataBank(int, int, std::string);
 		int getFirstEmptyID();
 		int updateRecords();
-		
+		int lookInRecords(int);
+		void showPropertiesByID(int);
+		int getProductPrice(int);
+
+
 		int lookForProduct(std::string);
+
+		std::string openSqlCmd(std::string);
 
 		Records getRecords();
 

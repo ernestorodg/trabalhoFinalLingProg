@@ -48,10 +48,9 @@ int DataBank::showDataBank()
 // Recebe o nome do banco de dados a ser aberto
 void DataBank::setDataBank(const char *nomeBancoDados)
 {
-	int verificacao = 0;
-	verificacao = sqlite3_open(nomeBancoDados, &dataBank);
-
-	std::cout << "Verificacao: " << verificacao << std::endl;
+	// int verificacao = 0;
+	sqlite3_open(nomeBancoDados, &dataBank);
+	// std::cout << "Verificacao: " << verificacao << std::endl;
 
 };
 
@@ -63,19 +62,13 @@ int DataBank::closeDataBank()
 };
 
 
-// Para modificar a tabela que será criada é necessário configurar 
-// o arquivo create_table em sqlCmd
-int DataBank::createTable()
+
+std::string DataBank::openSqlCmd(std::string sqlFile)
 {
-	int exit = 0;
-	char* messaggeError; 
-
-	std::string line = "";
 	std::string myQuery = "";
+	std::string line = "";
 
-	// Opening file create_table in sqlCmd folder
-	// This file contains the needed command to create an SQLite Table
-	std::ifstream myFile ("./sqlCmd/create_table.txt");
+	std::ifstream myFile (sqlFile);
 	if (myFile.is_open())
 	{
 		while (getline (myFile, line))
@@ -83,10 +76,29 @@ int DataBank::createTable()
 			myQuery += line;
 		}
 
-	// Closing the file. It is not necessary once read
-	myFile.close();
+		// Closing the file. It is not necessary once read
+		myFile.close();
 	}
 	else std::cout << "O arquivo não pôde ser aberto." << std::endl; 
+
+	return myQuery;
+};
+
+
+// Para modificar a tabela que será criada é necessário configurar 
+// o arquivo create_table em sqlCmd
+int DataBank::createTable()
+{
+	int exit = 0;
+	char* messaggeError; 
+	std::string myQuery = "";
+
+	// Opening file create_table in sqlCmd folder
+	// This file contains the needed command to create an SQLite Table
+	myQuery = openSqlCmd("./sqlCmd/create_table.sql");
+
+	if (myQuery == "")
+		return (-1);
 
 	// Executa a query no banco de dados 
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
@@ -101,6 +113,9 @@ int DataBank::createTable()
 	return (exit);
 }
 
+
+
+
 // Recebe os dados do produto a ser inserido na tabela SQL
 int DataBank::insertOnDataBank(std::string productID, std::string productName, 
 								std::string amount, std::string type,
@@ -112,8 +127,7 @@ int DataBank::insertOnDataBank(std::string productID, std::string productName,
 	char* messaggeError; 
 	int exit = 0;
 
-
-	std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
+	// std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
 
 	myQuery = ("INSERT INTO PRODUTOS VALUES("+ productID +", '" 
 												+ productName + "'," 
@@ -122,8 +136,11 @@ int DataBank::insertOnDataBank(std::string productID, std::string productName,
 												+ price + ");");
 
 
+	std::cout << myQuery << std::endl;
 	// Executa a string de insercao
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
+	// std::cout << messaggeError << std::endl;
+
 
 	if (exit != SQLITE_OK) 
 	{ 
@@ -222,18 +239,19 @@ Records DataBank::getRecords()
 // do banco de dados e coloca num vetor de vetores de strings para facilitar o acesso.
 int DataBank::extractDataBank(void *data, int argc, char **argv, char **azColName)
 {
-
-
 	Records* records = static_cast<Records*>(data);
 	
-	try {
+	try 
+	{
 		records->emplace_back(argv, argv + argc);
 	}
-	catch (...) {
+	catch (...) 
+	{
+		// Aborta para não propagar o erro através de sqlite3
 		std::cout << "Erro extraindo dados..." << std::endl;
-	// Aborta para não propagar o erro através de sqlite3
-	return 1;
+		return 1;
 	}
+
 	return 0;
 }
 
@@ -252,8 +270,10 @@ int DataBank::getFirstEmptyID()
 };
 
 
-// lookForProduct() retorna a ID do produto procurado (a procura eh feita pelo nome do produto)
+// lookForProduct(std::string) retorna a ID do produto procurado (a procura eh feita pelo nome do produto)
 // Caso não exista, retorna zero
+// Argumentos:
+// std::string productName: Nome do produto procurado
 int DataBank::lookForProduct(std::string productName)
 {
 	// ID NOME QUANTIDADE DESCRICAO PRECO
@@ -268,4 +288,63 @@ int DataBank::lookForProduct(std::string productName)
 	}
 
 	return (0);
+}
+
+// lookInRecords(std::string) retorna a posição do produto no vetor Records
+// Caso não exista, retorna -1
+// Argumentos:
+// std::string productID: ID do produto 
+int DataBank::lookInRecords(int productID)
+{
+	// ID NOME QUANTIDADE DESCRICAO PRECO
+	updateRecords();
+	int x = 0;
+
+	for (x = 0; x < static_cast<int>(records.size()); x++)
+	{
+		if (records[x][0] == std::to_string(productID))
+			return (x); // Retorna a posição do produto no vetor Records
+	}
+
+	return (-1);
+}
+
+// Mostra as propriedades do produto cuja ID foi passada: DESCRICAO PRECO
+void DataBank::showPropertiesByID(int productID)
+{
+	// ID NOME QUANTIDADE DESCRICAO PRECO
+	updateRecords();
+	int position = lookInRecords(productID);
+	int x = 0;
+
+
+	if (position != -1)
+	{
+		for (x = 3; x < static_cast<int>(records[position].size()); x++)
+		{
+			std::cout << std::setw(COLUMNS_LENGTH) << records[position][x];
+		}
+		std::cout << std::endl;
+	}
+	else 
+		std::cout << "\tErro: Produto não existe.";
+
+}
+
+// Devolve o preço de um determinado produto segundo o ID passado no primeiro argumento.
+int DataBank::getProductPrice(int productID)
+{
+	// ID NOME QUANTIDADE DESCRICAO PRECO
+	updateRecords();
+	int position = lookInRecords(productID);
+	int x = 0;
+
+
+	if (position != -1)
+			return std::stoi(records[position][4]);
+	else 
+		std::cout << "\tErro: Produto não existe.";
+
+	return (0);
+
 }

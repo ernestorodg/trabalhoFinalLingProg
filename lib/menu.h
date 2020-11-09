@@ -9,9 +9,11 @@ class Menu
 	public:
 		Menu();
 
-		void showMenu();
+		void showCashierMenu(); 
+		void showDataBankMenu();
 		int defineNumericInput();
 		std::string defineLiteralInput();
+		void teste();
 
 
 	
