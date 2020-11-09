@@ -5,6 +5,7 @@
 #include "caixa.h"
 #include "interface.h"	
 #include "menu.h"
+#include "extra.h"
 
 
 Caixa::Caixa(double novoSaldo) : saldo(novoSaldo), bancoDados("meuBanco.db"), items(0) {}
@@ -20,6 +21,14 @@ void Caixa::getProduct(std::string productName)
 	int myID = 0;
 	std::vector<int> auxiliarVector(2); 
 
+
+	std::cout << "this is a test" << std::endl;
+	std::vector <std::string> myVector;
+
+	myVector = separateNumberFromString("25 PRODUTO");
+
+	for (unsigned int indice_auxiliar = 0; indice_auxiliar < 2; indice_auxiliar++)
+		std::cout << "valor: " << myVector[indice_auxiliar] << std::endl;
 
 
 	myID =  bancoDados.lookForProduct(productName);
