@@ -25,7 +25,7 @@ void Caixa::getProduct(std::string productName)
 	std::cout << "this is a test" << std::endl;
 	std::vector <std::string> myVector;
 
-	myVector = separateNumberFromString("25 PRODUTO");
+	myVector = separateNumberFromString(" PRODUTO 252 5");
 
 	for (unsigned int indice_auxiliar = 0; indice_auxiliar < 2; indice_auxiliar++)
 		std::cout << "valor: " << myVector[indice_auxiliar] << std::endl;
