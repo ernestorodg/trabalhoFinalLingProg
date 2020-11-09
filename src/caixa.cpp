@@ -9,44 +9,79 @@
 
 
 Caixa::Caixa(double novoSaldo) : saldo(novoSaldo), bancoDados("meuBanco.db"), items(0) {}
+Caixa::~Caixa()
+{
+	bancoDados.closeDataBank();
+}
+
 
 double Caixa::getSaldo() { return saldo; };
 void Caixa::setSaldo(double novoSaldo) {saldo = novoSaldo;};
 
 
-
-void Caixa::getProduct(std::string productName)
+// Recebe a entrada do caixa, que deve ser uma string na forma " QUANTIDADE PRODUTO"
+// Retorna 0 se ocorreu certo
+// Retorna -1 se a entrada for inválida
+int Caixa::getProduct(std::string input)
 {
-	// Consulta o banco de dados para ver se tem esse produto
 	int myID = 0;
-	std::vector<int> auxiliarVector(2); 
+	std::vector <std::vector<int>> auxiliarVector; 
+	std::vector <int> tupla(2);
+	// Vetor que receberá a quantidade do produto e o nome do produto
+	std::vector <std::string> myInput(2);
+	myInput = separateNumberFromString(input);
+
+	if (myInput[0] == "")
+	{
+		if (myInput[1] == "")
+			return (-1);
+		else 
+			tupla[1] = 1;
+	}
+	else
+	{
+		if (myInput[1] != "")
+		{
+			tupla[1] = stoi(myInput[0]); // Atribuindo a quantidade inserida
+		}
+		else 
+			return (-1);
+	}
 
 
-	std::cout << "this is a test" << std::endl;
-	std::vector <std::string> myVector;
+	myID =  bancoDados.lookForProduct(myInput[1]);
 
-	myVector = separateNumberFromString(" PRODUTO 252 5");
-
-	for (unsigned int indice_auxiliar = 0; indice_auxiliar < 2; indice_auxiliar++)
-		std::cout << "valor: " << myVector[indice_auxiliar] << std::endl;
-
-
-	myID =  bancoDados.lookForProduct(productName);
-
-	if (myID == 0) // produto nao existe
+	if (myID == 0) 
+	{
+		// produto nao existe
 		std::cout << "Erro: O produto não foi encontrado." << std::endl;
+		return (0);
+	}
+
+	// Avaliar a quantidade do produto disponível:
+	if (bancoDados.getProductAmount(myID) < tupla[1])
+	{
+		// produto nao existe
+		std::cout << "Erro: A quantidade exigida é maior do que a disponível." << std::endl;
+		return (0);
+	}
+
 
 	else // produto existe
 	{
-		// atualizar produto
+		tupla[0] = myID;
+		bancoDados.updateDataBank(2, myID, std::to_string(bancoDados.getProductAmount(myID) - tupla[1]));
+
+
 		bancoDados.showPropertiesByID(myID);
 		std::cout << std::endl;
-		saldo += bancoDados.getProductPrice(myID);
-		items.push_back(myID);
-		auxiliarVector.push_back(myID);
+		saldo += (bancoDados.getProductPrice(myID) * tupla[1]);
+		items.push_back(tupla); // Guarda a quantidade e o produto que acabaram de ser compradas
 		// auxiliarVector.push_back(amount);
 	}
 
+
+	return (0);
 	// se tem, printa os outros detalhes e atualiza o saldo
 	// se nao tem, printa que nao tem
 
@@ -63,7 +98,7 @@ int Caixa::cancelLastProduct()
 		return (-1);
 	}	
 
-	myID =  items[items.size() - 1];
+	myID =  items[items.size() - 1][0];
 
 	if (myID == 0) // produto nao existe
 		std::cout << "Erro: O produto não foi encontrado." << std::endl;
@@ -71,9 +106,13 @@ int Caixa::cancelLastProduct()
 	else // produto existe
 	{
 		// atualizar produto
-		saldo -= bancoDados.getProductPrice(myID);
+		saldo -= bancoDados.getProductPrice(myID) * items[items.size() - 1][1];
+		// atualizar banco de dados
+		bancoDados.updateDataBank(2, myID, std::to_string(bancoDados.getProductAmount(myID) 
+															+ items[items.size() - 1][1]));
+
 		items.pop_back();
-		// auxiliarVector.push_back(amount);
+
 	}
 
 	return (0);
@@ -84,9 +123,10 @@ int Caixa::cancelLastProduct()
 
 void Caixa::executeDataBaseCommand(int numericInput)
 {
-	std::string inputCashier;
+	std::string literalInput;
 	std::string inputDataBank;
 	Menu menu;
+	int inputNumericID;
 	int auxiliar = numericInput;
 
 
@@ -102,8 +142,8 @@ void Caixa::executeDataBaseCommand(int numericInput)
 
 			case 2:
 				std::cout << "Digite o nome do produto procurado: ";
-				inputCashier = menu.defineLiteralInput();
-				auxiliar =  bancoDados.lookForProduct(inputCashier);
+				literalInput = menu.defineLiteralInput();
+				auxiliar =  bancoDados.lookForProduct(literalInput);
 
 				if (auxiliar == 0) // produto nao existe
 				{
@@ -131,31 +171,68 @@ void Caixa::executeDataBaseCommand(int numericInput)
 
 			case 3:
 				std::cout << "Digite o nome do produto a ser adicionado: ";
-				inputCashier = menu.defineLiteralInput();
-				auxiliar =  bancoDados.lookForProduct(inputCashier);
+				literalInput = menu.defineLiteralInput();
+				auxiliar =  bancoDados.lookForProduct(literalInput);
 
 				if (auxiliar == 0) // produto nao existe
 				{
-					std::cout << "O produto " << inputCashier << " não foi encontrado." << std::endl;
+					std::cout << "O produto " << literalInput << " não foi encontrado." << std::endl;
 					std::cout << "Criando novo produto..." << std::endl;
 					// criar um novo produto: requer pedir ao usuário os dados do produto
 					
-					bancoDados.insertOnDataBank( "100",
-											// std::to_string(bancoDados.getFirstEmptyID()), 
-																		 inputCashier , 
-																		 	"0" , "0" , "0");
+					// ID NOME QUANTIDADE DESCRICAO PRECO
+
+					inputNumericID = bancoDados.getFirstEmptyID();
+					bancoDados.insertOnDataBank(std::to_string(inputNumericID),
+																		literalInput , 
+																"0" , "0" , "0");
+					std::cout << "Digite o preço: ";
+					numericInput = menu.defineNumericInput();
+					bancoDados.updateDataBank(4, inputNumericID, std::to_string(numericInput));
+
+					std::cout << "Digite a descrição do produto: ";
+					literalInput = menu.defineLiteralInput();
+					bancoDados.updateDataBank(3, inputNumericID, literalInput);
+
+					std::cout << "Digite a quantidade do produto que será adicionada: ";
+					numericInput = menu.defineNumericInput();
+					bancoDados.updateDataBank(2, inputNumericID, std::to_string(numericInput));
 
 
 				}					
 				else // produto existe
 				{
-					// atualizar produto
-					// bancoDados.updateDataBank()
-					// bancoDados.updateDataBank(teste, auxiliar, );
+					std::cout << "Em quanto vai aumentar o estoque? ";
+					numericInput = menu.defineNumericInput();
+					std::cout << std::endl;
+					bancoDados.updateDataBank(2, 
+										auxiliar, 
+						std::to_string(bancoDados.getProductAmount(auxiliar) + numericInput));
+
+
 
 				}
 				break;
+			case 4:
+				// std::cout << "Digite o ID do produto a ser deletado: ";
+				// inputNumericID = menu.defineNumericInput();
 
+				std::cout << "Digite o nome do produto a ser removido: ";
+				literalInput = menu.defineLiteralInput();
+				auxiliar =  bancoDados.lookForProduct(literalInput);
+
+
+				if (auxiliar == 0) // produto nao existe
+				{
+					std::cout << "O produto " << literalInput << " não foi encontrado." << std::endl;
+				}					
+				else // produto existe
+				{
+					bancoDados.deleteRowFromDataBank(auxiliar);
+
+				}
+
+				break;
 
 			default:
 				break;

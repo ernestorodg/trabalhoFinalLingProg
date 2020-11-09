@@ -127,19 +127,29 @@ int DataBank::insertOnDataBank(std::string productID, std::string productName,
 	char* messaggeError; 
 	int exit = 0;
 
-	// std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
+	// Opening file insert_row in sqlCmd folder
+	// This file contains the needed command to create an SQLite Table
+	myQuery = openSqlCmd("./sqlCmd/insert_row.sql");
 
-	myQuery = ("INSERT INTO PRODUTOS VALUES("+ productID +", '" 
-												+ productName + "'," 
-												+ amount + " , '" 
-												+ type + "', " 
-												+ price + ");");
+	myQuery.replace(myQuery.find("productID"), std::string("productID").length(), productID);
+	myQuery.replace(myQuery.find("productName"), std::string("productName").length(), productName);
+	myQuery.replace(myQuery.find("amount"), std::string("amount").length(), amount);
+	myQuery.replace(myQuery.find("type"), std::string("type").length(), type);
+	myQuery.replace(myQuery.find("price"), std::string("price").length(), price);
+
+	// // The code above make the same than the code ahead
+	// myQuery = ("INSERT INTO PRODUTOS VALUES("+ productID +", '" 
+	// 											+ productName + "'," 
+	// 											+ amount + " , '" 
+	// 											+ type + "', " 
+	// 											+ price + ");");
 
 
-	std::cout << myQuery << std::endl;
-	// Executa a string de insercao
+
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
-	// std::cout << messaggeError << std::endl;
+	
+	if (messaggeError != NULL)
+		std::cout << messaggeError << std::endl;
 
 
 	if (exit != SQLITE_OK) 
@@ -148,7 +158,8 @@ int DataBank::insertOnDataBank(std::string productID, std::string productName,
 		sqlite3_free(messaggeError); 
 	} 
 	else
-		std::cout << "Gravação feita com sucesso!" << std::endl; 
+		// std::cout << "Gravação feita com sucesso!" << std::endl; 
+		std::cout << std::endl; 
 
 	return (exit);
 
@@ -157,13 +168,23 @@ int DataBank::insertOnDataBank(std::string productID, std::string productName,
 
 
 
-int DataBank::deleteRowFromDataBank()
+int DataBank::deleteRowFromDataBank(int ID)
 {
-	int exit = 0;
+	int exit = -1;
 	char* messaggeError; 
+	std::string myQuery = "";
 
-	// Deleta o ID = 2
-	std::string myQuery = "DELETE FROM PRODUTOS WHERE ID = 2;";
+	exit = lookInRecords(ID);
+	if (exit == -1)
+		return (exit);
+
+	// Opening file delete_row in sqlCmd folder
+	// This file contains the needed command to create an SQLite Table
+	myQuery = openSqlCmd("./sqlCmd/delete_row.sql");
+
+	myQuery.replace(myQuery.find("myID"), std::string("myID").length(), std::to_string(ID));
+
+	// std::string myQuery = "DELETE FROM PRODUTOS WHERE ID = " + std::to_string(ID) + ";";
 
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
 	if (exit != SQLITE_OK) 
@@ -172,7 +193,8 @@ int DataBank::deleteRowFromDataBank()
 		sqlite3_free(messaggeError); 
 	} 
 	else
-		std::cout << "Record deleted Successfully!" << std::endl; 
+		// std::cout << "Linha apagada com sucesso!" << std::endl; 
+		std::cout << "Linha apagada com sucesso!" << std::endl; 
 
 
 	// std::string query = "SELECT * FROM PRODUTOS;"; // seleciono tudo da tabela PRODUTOS,
@@ -190,15 +212,24 @@ int DataBank::updateDataBank(int index, int productID, std::string newValue)
 {
 	int exit = 0;
 	char* messaggeError; 
+	std::string myQuery = "";
 
 	std::vector <std::string> columns {"ID", "NOME", "QUANTIDADE", "DESCRICAO", "PRECO"}; 
 
 	std::string productIDStr = std::to_string(productID);
 
-	std::string myQuery = "UPDATE PRODUTOS SET " + columns[index] + " = '" + newValue + 
-								  "' WHERE ID = " + productIDStr + ";";
 
-	std::cout << myQuery << std::endl;
+	myQuery = openSqlCmd("./sqlCmd/update_row.sql");
+
+	myQuery.replace(myQuery.find("productType"), std::string("productType").length(), columns[index]);
+	myQuery.replace(myQuery.find("newValue"), std::string("newValue").length(), newValue);
+	myQuery.replace(myQuery.find("productIDStr"), std::string("productIDStr").length(), productIDStr);
+
+
+	// std::string myQuery = "UPDATE PRODUTOS SET " + columns[index] + " = '" + newValue + 
+	// 							  "' WHERE ID = " + productIDStr + ";";
+
+
 	exit = sqlite3_exec(dataBank, myQuery.c_str(), NULL, 0, &messaggeError); 
 
 	if (exit != SQLITE_OK) 
@@ -207,7 +238,8 @@ int DataBank::updateDataBank(int index, int productID, std::string newValue)
 		sqlite3_free(messaggeError); 
 	} 
 	else
-		std::cout << "Linha atualizada com sucesso!" << std::endl; 
+		// std::cout << "Linha atualizada com sucesso!" << std::endl; 
+		std::cout << std::endl; 
 
 	return exit;
 
@@ -216,8 +248,8 @@ int DataBank::updateDataBank(int index, int productID, std::string newValue)
 
 
 
-// Para uma inserção controlada, é necessário saber qual o primeiro ID vazio.
-// getFirstEmptyID() retorna o primeiro ID vazio no banco de dados.
+
+
 int DataBank::updateRecords()
 {
 	records.clear();
@@ -255,17 +287,34 @@ int DataBank::extractDataBank(void *data, int argc, char **argv, char **azColNam
 	return 0;
 }
 
+
+// Para uma inserção controlada, é necessário saber qual o primeiro ID vazio.
+// getFirstEmptyID() retorna o primeiro ID vazio no banco de dados.
 int DataBank::getFirstEmptyID()
 {
 	updateRecords();
-	int x = 0;
+	bool found = true;
+	int y;
+	int x;
 
-	for (x = 0; x < static_cast<int>(records.size()); x++)
+	for (x = 1; x < static_cast<int>(records.size()) + 1; x++)
 	{
-		if (std::stoi(records[x][0]) != x)
-			return x;
-	}
+		for (y = 0; y < static_cast<int>(records.size()); y ++)
+		{
+			// std::cout << "Comparando " << std::stoi(records[y][0]) << " e " << x << std::endl;
+			if (std::stoi(records[y][0]) ==  x)
+			{
+				found = false;
+				break;
+			}
 
+		}
+		if (found == true)
+			return (x);
+		else
+			found = true;
+
+	}
 	return (x);
 };
 
@@ -337,8 +386,6 @@ int DataBank::getProductPrice(int productID)
 	// ID NOME QUANTIDADE DESCRICAO PRECO
 	updateRecords();
 	int position = lookInRecords(productID);
-	int x = 0;
-
 
 	if (position != -1)
 			return std::stoi(records[position][4]);
@@ -346,5 +393,19 @@ int DataBank::getProductPrice(int productID)
 		std::cout << "\tErro: Produto não existe.";
 
 	return (0);
+}
 
+// Devolve o preço de um determinado produto segundo o ID passado no primeiro argumento.
+int DataBank::getProductAmount(int productID)
+{
+	// ID NOME QUANTIDADE DESCRICAO PRECO
+	updateRecords();
+	int position = lookInRecords(productID);
+
+	if (position != -1)
+			return std::stoi(records[position][2]);
+	else 
+		std::cout << "\tErro: Produto não existe.";
+
+	return (0);
 }

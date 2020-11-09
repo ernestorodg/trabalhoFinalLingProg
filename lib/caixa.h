@@ -10,10 +10,11 @@ class Caixa
 {
 	public:
 		Caixa(double = 10000);
+		~Caixa();
 
 		double getSaldo();
 		void setSaldo(double);
-		void getProduct(std::string);
+		int getProduct(std::string);
 		int cancelLastProduct();
 
 	 	void executeDataBaseCommand(int);
@@ -23,7 +24,7 @@ class Caixa
 		double saldo;
 		DataBank bancoDados;
 		// std::vector <std::vector<int>> items; 
-		std::vector<int> items; 
+		std::vector<std::vector<int>> items; 
 
 };
 

@@ -26,11 +26,11 @@ void Menu::showCashierMenu()
 
 void Menu::showDataBankMenu() 
 {
+		std::cout <<  std::endl;	
 		std::cout << "1: Mostrar todos os produtos." << std::endl;
 		std::cout << "2: Modificar um produto." << std::endl;
 		std::cout << "3: Adicionar produto ao estoque." << std::endl;
-		std::cout << "2: Modificar o preço de um produto." << std::endl;
-		std::cout << "3: ." << std::endl;
+		std::cout << "4: Deletar um produto." << std::endl;
 		std::cout << "Outros: Sair" << std::endl;
 		std::cout << "Escolha alguma das opcoes acima a ser efetuada: ";
 

@@ -16,7 +16,7 @@
 
 int main() 
 { 
-	int escolhaNumerica = 0; 	// Guarda o valor a ser usado no menu
+	int auxiliar = 0; 	// Guarda o valor a ser usado no menu
 	std::string inputCashier; 	// Guarda o valor que o usuario colocar
 	std::string inputDataBank;
 	int numericInputDataBank = 0;
@@ -60,9 +60,7 @@ int main()
 		}
 		else if (inputCashier == "EXIT")
 		{
-			std::cout << "EXIT" << std::endl;
-
-			// Sai do programa
+			// Sai do programa, fecha o banco de dados
 		}
 		else if (inputCashier == "DATABASE")
 		{
@@ -83,7 +81,13 @@ int main()
 
 		}
 		else // Enquanto nenhuma das opções acima for escolhida o programa pede o produto
-			caixa.getProduct(inputCashier);		
+		{
+			auxiliar = caixa.getProduct(inputCashier);		
+			if (auxiliar == -1)
+				std::cout << "Erro: entrada inválida. Por favor, certifique-se de que "
+						  << "a entrada é do tipo \"PRODUTO QUANTIDADE\" ou \"QUANTIDADE PRODUTO\"" 
+						  << std::endl;
+		}
 	}
 
 
@@ -92,8 +96,6 @@ int main()
 	// // meuBanco.closeDataBank();
 
 
-
-	std::cout << "Saindo do programa..." << std::endl;
 
 	return (OK);
 } 

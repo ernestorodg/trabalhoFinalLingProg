@@ -33,14 +33,9 @@ std::vector<std::string> separateNumberFromString(std::string input)
 
 
 	while (product.find(" ") != std::string::npos)
-	{
 		product.erase(product.find(" "), 1);	
-		std::cout << "product: " << product << " tamanho: " << product.length() << std::endl;
-
-	}
 
 	amount = product;
-	std::cout << "amount: " << amount << " tamanho: " << amount.length() << std::endl;
 
 	// Apago todos os números
 	for (unsigned int auxiliarIndex = 0; auxiliarIndex < product.length(); auxiliarIndex++)
@@ -54,13 +49,6 @@ std::vector<std::string> separateNumberFromString(std::string input)
 
 	}
 
-	std::cout << input << std::endl;
-	std::cout << product << std::endl;
-	std::cout << input.find(product) << std::endl;
-
-
-	std::cout << "amount: " << amount << " tamanho: " << amount.length() << std::endl;
-
 	// elimino a possibilidade de ter uma entrada do tipo "25 PRO25DUTO "
 	if (input.find(product) == std::string::npos)
 	{
@@ -69,27 +57,12 @@ std::vector<std::string> separateNumberFromString(std::string input)
 
 		return (output);
 	}
-	else
-	{
-		std::cout << "input: " << input << " tamanho: " << input.length() << std::endl;
-		std::cout << "product: " << product << " tamanho: " << product.length() << std::endl;
-		std::cout << "amount: " << amount << " tamanho: " << product.length() << std::endl;
-
-		// corta product da string de entrada, sobrará somente números
+	else 	// corta product da string de entrada, sobrará somente números
 		amount = amount.erase(amount.find(product), product.length());
-
-	}
-
-	std::cout << "amount: " << amount << " tamanho: " << amount.length() << std::endl;
-
 
 
 
 	// trata uma entrada do tipo PRODUTO 25 25
-	// auxiliar = input.substr(input.find(amount), amount.length()); 
-	std::cout << "auxiliar: " << auxiliar << " tamanho: " << auxiliar.length() << std::endl;
-
-
 	if (input.find(amount) == std::string::npos)
 	{
 		output[0] = "";

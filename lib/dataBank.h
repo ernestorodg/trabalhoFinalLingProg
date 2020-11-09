@@ -31,7 +31,7 @@ class DataBank
 		int createTable();
 		int insertOnDataBank(std::string , std::string , std::string , std::string , std::string );
 		int showDataBank();
-		int deleteRowFromDataBank();
+		int deleteRowFromDataBank(int);
 		int closeDataBank();
 		int updateDataBank(int, int, std::string);
 		int getFirstEmptyID();
@@ -39,6 +39,7 @@ class DataBank
 		int lookInRecords(int);
 		void showPropertiesByID(int);
 		int getProductPrice(int);
+		int getProductAmount(int);
 
 
 		int lookForProduct(std::string);
