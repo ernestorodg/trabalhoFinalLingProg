@@ -27,7 +27,6 @@ class DataBank
 		static int extractDataBank(void*, int, char**, char**); 
 
 		void setDataBank(const char *);
-		int printRows();
 		int createTable();
 		int insertOnDataBank(std::string , std::string , std::string , std::string , std::string );
 		int showDataBank();

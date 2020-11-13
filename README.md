@@ -15,8 +15,9 @@ Ter sqlite3:
 	A versão usada neste programa foi: 3.22.0 2018-01-22
 
 	Caso não possua, digite:
-		$ sudo apt install sqlite3
+		$ sudo apt install sqlite3 libsqlite3-dev
 
+g++ version >= 7.5.0 
 
 ***************
 Uma vez cumpridos todos os requisitos,
@@ -24,7 +25,7 @@ Execute
 
 $ make 
 
-para compilar o programa.
+para compilar o programa. 
 
 ***************
 
@@ -41,9 +42,7 @@ Para executar o programa, digite
 
 O programa implementa a classe DataBank, uma classe para facilitar a interação com um banco de dados SQL.
 
-Atributos:
-
-Métodos:
+Confira a documentação no documento "Relatorio_ETAPA2.pdf" presente na raíz.
 
 *****************
 

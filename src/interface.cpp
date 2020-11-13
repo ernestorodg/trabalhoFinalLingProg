@@ -8,17 +8,17 @@
 Interface::Interface(){}
 
 
+// Testes interessantes para quem quiser experimentar com o terminal
+// void Interface::test()
+// {
+//     // printf("%c[%dmHELLO!\n", 0x1B, 32); // coloca a cor em verde
+//     printf("%c[%dK HELLO!\n", 0x1B, 0); // Limpa a linha desde o cursor até o fim
 
-void Interface::test()
-{
-    // printf("%c[%dmHELLO!\n", 0x1B, 32); // coloca a cor em verde
-    printf("%c[%dK HELLO!\n", 0x1B, 0); // Limpa a linha desde o cursor até o fim
+//     printf("%c[%dK HELLO!\n", 0x1B, 1); // Limpa a linha desde o cursor até o inicio
+//     printf("%c[%dK HELLO!\n", 0x1B, 2); // Limpa a linha toda
+//     printf("%c[%dJ HELLO!\n", 0x1B, 2); // Apaga a tela
 
-    printf("%c[%dK HELLO!\n", 0x1B, 1); // Limpa a linha desde o cursor até o inicio
-    printf("%c[%dK HELLO!\n", 0x1B, 2); // Limpa a linha toda
-    printf("%c[%dJ HELLO!\n", 0x1B, 2); // Apaga a tela
-
-};
+// };
 
 
 void Interface::cleanScreen()

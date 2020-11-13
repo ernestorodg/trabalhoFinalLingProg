@@ -9,7 +9,6 @@ class Interface
 	public:
 		Interface();
 
-		static void test();
 		static void cleanScreen();
 		static void saveScreen();
 		static void restoreScreen();
